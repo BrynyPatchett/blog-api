@@ -1,7 +1,11 @@
 const jwt = require('jsonwebtoken');
+const asyncHandler = require('express-async-handler')
+const User = require('../models/user')
 require("dotenv").config();
 
-function authenticateToken(req,res,next){
+
+
+exports.authenticateToken = (req,res,next) => {
     //get auth token value
     const authHeader = req.headers['authorization']
     const token = authHeader  && authHeader.split(' ')[1]
@@ -15,5 +19,27 @@ function authenticateToken(req,res,next){
         next();
     })
 }
+exports.addPermmisions = asyncHandler(async(req,res,next) => {
+    //Check if user has provided a valid token
+    if(!req.user){
+        return res.sendStatus(403)
+    }
+    const user = await User.findById(req.user.sub);
+    if(user == null){
+        return res.sendStatus(401)
+    }
+    req.user.permissions = user.permissions;
+    next();
+})
 
-module.exports = authenticateToken;
+
+exports.adminAuthorization = ((req,res,next) => {
+    //Check if user has provided a valid token
+    if(!req.user || !req.user.permissions){
+        return res.sendStatus(403)
+    }
+    if(req.user.permissions != 'Admin'){
+        return res.sendStatus(403)
+    }
+    next();
+})

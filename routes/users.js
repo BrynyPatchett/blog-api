@@ -5,15 +5,15 @@ const {body, validationResult} = require('express-validator')
 const bcrypt = require("bcryptjs")
 const User = require('../models/user')
 const jwt = require('jsonwebtoken');
-const authenticateToken = require('../util/auth')
+const auth = require('../util/auth')
 require("dotenv").config();
 
 const JS_TOKEN_SECRET = process.env.JS_TOKEN_SECRET;
 
 
 //Needs to have a admin check on it 
-router.get('/',authenticateToken,(req,res) => {
-    res.json({message:"USERS Get ALL response"})
+router.get('/',auth.authenticateToken,auth.addPermmisions,auth.adminAuthorization,(req,res) => {
+   return res.json({message:"USERS Get ALL response"})
 })
 
 //Create a user with a json post, run validation
@@ -62,7 +62,6 @@ body("password").trim().isLength({min:5}).escape().withMessage("Password must be
     if(!validPassword){
         return res.status(422).json([{msg:"Incorrect password"}])
     }
-    // check pass word
     const accessToken = jwt.sign({sub:user.id,name:user.username, expiresIn: 3600000},JS_TOKEN_SECRET);
     res.json({token: accessToken})
 }))
