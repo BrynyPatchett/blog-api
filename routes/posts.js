@@ -9,6 +9,7 @@ router.get('/', (req,res) => {
 })
 
 router.post('/', (req,res) => {
+    console.log(req)
     res.json({message:"POSTS create response"})
 })
 

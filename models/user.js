@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 
 const UserSchema = new Schema({
     username: { type: String, required: true, minLength: 5, max: 18 },
-    password: { type: String, requried: true, minLength: 3 },
+    password: { type: String, requried: true, minLength: 5 },
     permissions: {
         type: String,
         required: true,
@@ -12,4 +12,4 @@ const UserSchema = new Schema({
     }
 })
 
-module.exports = mongoose.Model("User", UserSchema)
+module.exports = mongoose.model("User", UserSchema)
