@@ -24,6 +24,7 @@ exports.addPermmisions = asyncHandler(async(req,res,next) => {
     if(!req.user){
         return res.sendStatus(403)
     }
+    
     const user = await User.findById(req.user.sub);
     if(user == null){
         return res.sendStatus(401)
@@ -32,7 +33,7 @@ exports.addPermmisions = asyncHandler(async(req,res,next) => {
     next();
 })
 
-
+//used to stop non admin users accessing a route
 exports.adminAuthorization = ((req,res,next) => {
     //Check if user has provided a valid token
     if(!req.user || !req.user.permissions){

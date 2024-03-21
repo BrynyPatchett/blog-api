@@ -41,7 +41,7 @@ body("confirmpassword").custom((value, { req }) => {
             password:hashedPassword,
         })
         const user = await newUser.save();
-        return res.status(201).location("/users"+user.id).json()
+        return res.status(201).location("/users/"+user.id).json()
     })
 }),
 )
@@ -66,9 +66,21 @@ body("password").trim().isLength({min:5}).escape().withMessage("Password must be
     res.json({token: accessToken})
 }))
 
-router.get('/:id', (req,res) => {
-    res.json({message:`USERS get ${req.params.id} reponse`})
-})
+router.get('/:id', auth.authenticateToken,auth.addPermmisions,asyncHandler( async (req,res) => {
+    console.log(req.params)
+    console.log(req.user.sub)
+    console.log(req.user.permissions)
+    if(!req.user.permissions != 'Admin' && req.user.sub != req.params.id){
+        return res.sendStatus(403)
+    }
+    const user = await User.findById(req.params.id,'username permissions');
+    console.log("here")
+    if(user == null){
+        return res.sendStatus(401).json([{msg:"User not found"}])
+    }
+   return res.json(user);
+
+}))
 
 router.put('/:id', (req,res) => {
     res.json({message:`USERS update ${req.params.id} reponse`})
