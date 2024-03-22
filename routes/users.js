@@ -12,9 +12,10 @@ const JS_TOKEN_SECRET = process.env.JS_TOKEN_SECRET;
 
 
 //Needs to have a admin check on it 
-router.get('/',auth.authenticateToken,auth.addPermmisions,auth.adminAuthorization,(req,res) => {
-   return res.json({message:"USERS Get ALL response"})
-})
+router.get('/',auth.authenticateToken,auth.addPermmisions,auth.adminAuthorization,asyncHandler(async (req,res) => {
+    const users = await User.find({},'username permissions').exec();
+   return res.json(users)
+}))
 
 //Create a user with a json post, run validation
 router.post('/',
@@ -66,20 +67,12 @@ body("password").trim().isLength({min:5}).escape().withMessage("Password must be
     res.json({token: accessToken})
 }))
 
-router.get('/:id', auth.authenticateToken,auth.addPermmisions,asyncHandler( async (req,res) => {
-    console.log(req.params)
-    console.log(req.user.sub)
-    console.log(req.user.permissions)
-    if(!req.user.permissions != 'Admin' && req.user.sub != req.params.id){
-        return res.sendStatus(403)
-    }
-    const user = await User.findById(req.params.id,'username permissions');
-    console.log("here")
+router.get('/:id',asyncHandler( async (req,res) => {
+    const user = await User.findById(req.params.id,'username');
     if(user == null){
         return res.sendStatus(401).json([{msg:"User not found"}])
     }
    return res.json(user);
-
 }))
 
 router.put('/:id', (req,res) => {
