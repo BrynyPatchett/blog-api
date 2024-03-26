@@ -4,6 +4,7 @@ const User = require('../models/user')
 require("dotenv").config();
 
 
+
 exports.authenticateToken = (req,res,next) => {
     //get auth token value
     const authHeader = req.headers['authorization']
@@ -44,7 +45,7 @@ exports.adminAuthorization = ((req,res,next) => {
     next();
 })
 
-exports.ownsResource = ((req, res,next) => {
+exports.isUser = ((req, res,next) => {
     if(req.user.sub != req.params.id){
         return res.sendStatus(403)
     }

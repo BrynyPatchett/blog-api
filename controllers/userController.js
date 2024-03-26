@@ -74,8 +74,7 @@ exports.get_user = asyncHandler(async (req, res) => {
 
 exports.put_update_user = [
     auth.authenticateToken,
-    auth.addPermmisions,
-    auth.ownsResource,
+    auth.isUser,
     body("username").trim().isLength({ min: 5, max: 18 }).escape().withMessage("Username must be at between 5 and 18 characters").isAlphanumeric().withMessage("Username must contain only letters and numbers"),
     body("password").trim().isLength({ min: 5 }).escape().withMessage("Password must be at least 5 characters"),
     asyncHandler(async (req, res) => {
