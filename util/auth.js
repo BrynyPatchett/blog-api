@@ -4,7 +4,6 @@ const User = require('../models/user')
 require("dotenv").config();
 
 
-
 exports.authenticateToken = (req,res,next) => {
     //get auth token value
     const authHeader = req.headers['authorization']
@@ -54,7 +53,8 @@ exports.ownsResource = ((req, res,next) => {
 
 
 exports.ownsResourceOrAdmin = ((req, res,next) => {
-    //if the user does not have the correct user id in its token , or is not a atmin 
+    console.log(req.user.permissions)
+    //if the user does not have the correct user id in its token and is not a admin 
     if(req.user.sub != req.params.id && req.user.permissions != 'Admin' ){
         return res.sendStatus(403)
     }

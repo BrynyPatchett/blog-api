@@ -104,7 +104,8 @@ exports.delete_user = [
     auth.authenticateToken,
     auth.addPermmisions,
     auth.ownsResourceOrAdmin,
-    (req, res) => {
-    return res.json({ message: `USERS delete ${req.params.id} reponse` })
-    },]
+    asyncHandler(async(req, res) => {
+        await User.findByIdAndDelete(req.params.id)
+        return res.sendStatus(200)
+    }),]
 
