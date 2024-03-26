@@ -2,9 +2,7 @@ const express = require('express')
 const router = express.Router({mergeParams:true});
 const commentController = require('../controllers/commentController')
 
-router.get('/', (req,res) => {
-    
-})
+router.get('/', commentController.get_post_comments)
 
 router.post('/', commentController.post_create_comment)
 

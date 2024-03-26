@@ -6,7 +6,10 @@ const asyncHandler = require("express-async-handler");
 
 
 
-
+exports.get_post_comments = asyncHandler(async(req,res) => {
+    const allCommentsOnPost = await Comment.find({"post": req.params.postid}).populate("user", "username").sort({date:-1})
+    return res.json(allCommentsOnPost)
+})
 
 
 exports.post_create_comment = [
