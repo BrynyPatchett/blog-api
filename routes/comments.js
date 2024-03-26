@@ -6,9 +6,7 @@ router.get('/', commentController.get_post_comments)
 
 router.post('/', commentController.post_create_comment)
 
-router.get('/:commentid', (req,res) => {
-    res.json({message:`COMMENTS get ${req.params.postid} +  ${req.params.commentid} reponse`})
-})
+router.get('/:commentid', commentController.get_comment)
 
 router.put('/:commentid', (req,res) => {
     res.json({message:`COMMENTS update ${req.params.commentid} reponse`})

@@ -32,3 +32,15 @@ exports.post_create_comment = [
         const comment = await newComment.save();
         return res.status(201).location("/posts/" + req.params.postid + "/comments/" + comment.id).json()
     })];
+
+   exports.get_comment = asyncHandler(async(req,res) => {
+    try{
+        const commentOnPost = await Comment.find({"post": req.params.postid, "_id":req.params.commentid}).populate("user", "username").sort({date:-1})
+        if(commentOnPost == null){
+            return res.sendStatus(404)
+        }
+        return res.json(commentOnPost)
+    }catch(err){
+        return res.sendStatus(404)
+    }
+})
