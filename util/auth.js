@@ -44,3 +44,19 @@ exports.adminAuthorization = ((req,res,next) => {
     }
     next();
 })
+
+exports.ownsResource = ((req, res,next) => {
+    if(req.user.sub != req.params.id){
+        return res.sendStatus(403)
+    }
+    next()
+})
+
+
+exports.ownsResourceOrAdmin = ((req, res,next) => {
+    //if the user does not have the correct user id in its token , or is not a atmin 
+    if(req.user.sub != req.params.id && req.user.permissions != 'Admin' ){
+        return res.sendStatus(403)
+    }
+    next()
+})
