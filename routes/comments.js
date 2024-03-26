@@ -1,13 +1,12 @@
 const express = require('express')
 const router = express.Router({mergeParams:true});
+const commentController = require('../controllers/commentController')
 
 router.get('/', (req,res) => {
-    res.json({message:"COMMENTS Get ALL response"})
+    
 })
 
-router.post('/', (req,res) => {
-    res.json({message:"COMMENTS create response"})
-})
+router.post('/', commentController.post_create_comment)
 
 router.get('/:commentid', (req,res) => {
     res.json({message:`COMMENTS get ${req.params.postid} +  ${req.params.commentid} reponse`})
