@@ -10,9 +10,7 @@ router.get('/:commentid', commentController.get_comment)
 
 router.put('/:commentid', commentController.put_update_comment);
 
-router.delete('/:commentid', (req,res) => {
-    res.json({message:`COMMENTS delete ${req.params.commentid} reponse`})
-})
+router.delete('/:commentid', commentController.delete_comment);
 
 
 module.exports = router

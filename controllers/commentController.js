@@ -1,6 +1,6 @@
 const Comment = require('../models/comment')
 const Post = require('../models/post')
-const { authenticateToken } = require("../util/auth");
+const auth = require("../util/auth");
 const { body, validationResult } = require('express-validator')
 const asyncHandler = require("express-async-handler");
 
@@ -13,7 +13,7 @@ exports.get_post_comments = asyncHandler(async (req, res) => {
 
 
 exports.post_create_comment = [
-    authenticateToken,
+    auth.authenticateToken,
     body("content").trim().isLength({ min: 1 }).escape().withMessage("Post content must be at least 5 characters"),
     asyncHandler(async (req, res) => {
         const errors = validationResult(req);
@@ -47,7 +47,7 @@ exports.get_comment = asyncHandler(async (req, res) => {
 
 
 exports.put_update_comment = [
-    authenticateToken,
+   auth.authenticateToken,
     body("content").trim().isLength({ min: 1 }).escape().withMessage("Post content must be at least 5 characters"),
     asyncHandler(async (req,res) => {
         const errors = validationResult(req);
@@ -73,5 +73,24 @@ exports.put_update_comment = [
 
        await Comment.findByIdAndUpdate(newComment._id,newComment);
        return res.status(200).location("/posts/" + req.params.postid + "/comments/" + newComment.id).json()
+    })
+]
+
+exports.delete_comment = [
+    auth.authenticateToken,
+    auth.addPermmisions,
+    asyncHandler(async (req, res) => {
+        const commentResult =  await Comment.find({ "post": req.params.postid, "_id": req.params.commentid }).populate("post")
+        const comment = commentResult[0]
+        if(comment == null){
+            return res.sendStatus(404)
+        }
+        //if logged in user is not comment owner, post owner or admin
+        if(req.user.sub != comment.user._id && req.user.permissions != "Admin" && req.user.sub != comment.post.author._id){
+            return res.sendStatus(403)
+        }
+        await Comment.findByIdAndDelete(req.params.commentid)
+        return res.sendStatus(200)
+    
     })
 ]

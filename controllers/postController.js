@@ -71,10 +71,7 @@ exports.delete_post = [
 auth.authenticateToken,
 auth.addPermmisions,
 asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json(errors.array())
-    }
+
     const post = await Post.findById(req.params.postid)
     if(req.user.sub != post.author._id && req.user.permissions != "Admin"){
         return res.sendStatus(403)
@@ -83,7 +80,6 @@ asyncHandler(async (req, res) => {
     return res.sendStatus(200)
 
 })];
-
 
 
 
