@@ -8,9 +8,7 @@ router.post('/', commentController.post_create_comment)
 
 router.get('/:commentid', commentController.get_comment)
 
-router.put('/:commentid', (req,res) => {
-    res.json({message:`COMMENTS update ${req.params.commentid} reponse`})
-})
+router.put('/:commentid', commentController.put_update_comment);
 
 router.delete('/:commentid', (req,res) => {
     res.json({message:`COMMENTS delete ${req.params.commentid} reponse`})

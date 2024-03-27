@@ -50,10 +50,12 @@ exports.put_update_post =[
             return res.status(400).json(errors.array())
         }
         const post = await Post.findById(req.params.postid)
+        if(post == null){
+            return res.sendStatus(404)
+        }
         if(req.user.sub != post.author._id){
             return res.sendStatus(403)
         }
-        console.log()
         const updatedPost = new Post({
             title: req.body.title,
             content: req.body.content,
