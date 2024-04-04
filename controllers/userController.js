@@ -3,6 +3,7 @@ const asyncHandler = require('express-async-handler')
 const { body, validationResult } = require('express-validator')
 const bcrypt = require("bcryptjs")
 const User = require('../models/user')
+const Post = require('../models/post')
 const jwt = require('jsonwebtoken');
 const auth = require('../util/auth')
 require("dotenv").config();
@@ -64,13 +65,27 @@ exports.login = [
     })]
 
 
-exports.get_user = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id, 'username');
+exports.get_user = [
+    auth.authenticateTokenOptional,
+    auth.addPermmisionsOptional,
+    asyncHandler(async (req, res) => {
+    let user;
+    let userPosts;
+
+    if(req.user && (req.user.permissions === 'Admin' || req.user.sub === req.params.id)){
+        [user,userPosts] = await Promise.all([User.findById(req.params.id, 'username'),Post.find({author:req.params.id})]);
+    }else{
+        [user,userPosts] = await Promise.all([User.findById(req.params.id, 'username'),Post.find({author:req.params.id, status:"Published"})]);
+    }
     if (user == null) {
         return res.sendStatus(401).json([{ msg: "User not found" }])
     }
-    return res.json(user);
-})
+    newobj = {
+        user:user,
+        posts:userPosts
+    }
+    return res.json(newobj);
+})]
 
 exports.put_update_user = [
     auth.authenticateToken,

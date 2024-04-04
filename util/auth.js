@@ -19,6 +19,27 @@ exports.authenticateToken = (req,res,next) => {
         next();
     })
 }
+
+exports.authenticateTokenOptional = (req,res,next) => {
+    //get auth token value
+    const authHeader = req.headers['authorization']
+    const token = authHeader  && authHeader.split(' ')[1]
+    console.log(token)
+    if(token == null) {
+        next();
+        return
+    }
+    jwt.verify(token,process.env.JS_TOKEN_SECRET,(err,user) => {
+        if(err){
+            return res.sendStatus(403)
+        }
+        req.user = user
+        next();
+    })
+}
+
+
+
 exports.addPermmisions = asyncHandler(async(req,res,next) => {
     //Check if user has provided a valid token
     if(!req.user){
@@ -28,6 +49,22 @@ exports.addPermmisions = asyncHandler(async(req,res,next) => {
     const user = await User.findById(req.user.sub);
     if(user == null){
         return res.sendStatus(401)
+    }
+    req.user.permissions = user.permissions;
+    next();
+})
+
+exports.addPermmisionsOptional = asyncHandler(async(req,res,next) => {
+    //Check if user has provided a valid token
+    if(!req.user){
+        next()
+        return
+    }
+    
+    const user = await User.findById(req.user.sub);
+    if(user == null){
+        next()
+        return
     }
     req.user.permissions = user.permissions;
     next();

@@ -5,7 +5,7 @@ const auth = require('../util/auth')
 
 
 exports.get_posts =  asyncHandler(async (req, res) => {
-        const allPosts = await Post.find().populate("author", "username").exec()
+        const allPosts = await Post.find({status:"Published"}).populate("author", "username").exec()
         return res.json(allPosts)
     }); 
 
