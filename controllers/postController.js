@@ -13,6 +13,9 @@ exports.post_create_post = [
     auth.authenticateToken,
         body("title").trim().isLength({ min: 5, max: 100 }).escape().withMessage("Title must be at between 5 and 100 characters"),
         body("content").trim().isLength({ min: 1 }).escape().withMessage("Post content must be at least 5 characters"),
+        body("status").custom((value) => {
+            return value === "Published" ||value === "Unpublished" ;
+        }).withMessage("Error with Status"),
         asyncHandler(async (req, res) => {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -21,6 +24,7 @@ exports.post_create_post = [
             const newPost = new Post({
                 title: req.body.title,
                 content: req.body.content,
+                status:req.body.status,
                 author: req.user.sub
             })
             const post = await newPost.save();
@@ -44,6 +48,9 @@ exports.put_update_post =[
      auth.authenticateToken,
     body("title").trim().isLength({ min: 5, max: 100 }).escape().withMessage("Title must be at between 5 and 100 characters"),
     body("content").trim().isLength({ min: 1 }).escape().withMessage("Post content must be at least 5 characters"),
+    body("status").custom((value) => {
+        return value === "Published" ||value === "Unpublished" ;
+    }).withMessage("Error with Status"),
     asyncHandler(async (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -60,6 +67,7 @@ exports.put_update_post =[
             title: req.body.title,
             content: req.body.content,
             author: post.author._id,
+            status:req.body.status,
             _id:post._id
         })
         const updated = await Post.findByIdAndUpdate(req.params.postid,updatedPost)
